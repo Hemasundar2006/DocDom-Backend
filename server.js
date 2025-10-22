@@ -14,10 +14,8 @@ app.use(cors({
   origin: [
     'http://localhost:3000', // Local development
     'http://localhost:3001', // Alternative local port
-    'https://docdomcom.vercel.app', // Production frontend
-    'https://www.docdomcot.vercel.app', // Production frontend with www
-    'https://docdom-4uqb.vercel.app',
-    'https://docdomt.vercel.app/' ,// Preview/Env frontend
+    'https://docdomt.vercel.app', // Production frontend
+    'https://docdom-4uqb.vercel.app' // Preview/Env frontend
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
