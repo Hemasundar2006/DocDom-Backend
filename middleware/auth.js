@@ -46,14 +46,12 @@ const protect = async (req, res, next) => {
 };
 
 /**
- * Generate JWT token
+ * Generate JWT token (No expiration)
  * @param {string} id - User ID
  * @returns {string} JWT token
  */
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || '7d'
-  });
+  return jwt.sign({ id }, process.env.JWT_SECRET);
 };
 
 module.exports = { protect, generateToken };
