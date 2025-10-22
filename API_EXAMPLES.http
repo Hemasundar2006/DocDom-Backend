@@ -1,0 +1,150 @@
+### Student Resource Hub API Examples
+### Use with REST Client extension in VS Code or similar tools
+
+### Variables (Update these after testing)
+@baseUrl = http://localhost:5000
+@token = YOUR_JWT_TOKEN_HERE
+@collegeId = YOUR_COLLEGE_ID_HERE
+@fileId = YOUR_FILE_ID_HERE
+
+###############################################
+# HEALTH CHECK
+###############################################
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Root Endpoint
+GET {{baseUrl}}/
+
+###############################################
+# AUTHENTICATION
+###############################################
+
+### Get All Colleges
+GET {{baseUrl}}/api/colleges
+
+### Register New User
+POST {{baseUrl}}/api/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@cec.ac.in",
+  "password": "password123",
+  "collegeId": "{{collegeId}}"
+}
+
+### Login
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "email": "john@cec.ac.in",
+  "password": "password123"
+}
+
+### Get Current User Profile
+GET {{baseUrl}}/api/user/me
+Authorization: Bearer {{token}}
+
+###############################################
+# FILE MANAGEMENT
+###############################################
+
+### Upload File (Multipart Form Data)
+# Note: Update the file path below
+POST {{baseUrl}}/api/files/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="sample.pdf"
+Content-Type: application/pdf
+
+< ./sample.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="semester"
+
+3
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="course"
+
+Data Structures
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+Lab manual for Data Structures course
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Get All Files (From User's College)
+GET {{baseUrl}}/api/files
+Authorization: Bearer {{token}}
+
+### Get Files - Filter by Semester
+GET {{baseUrl}}/api/files?semester=3
+Authorization: Bearer {{token}}
+
+### Get Files - Filter by Course
+GET {{baseUrl}}/api/files?course=Data%20Structures
+Authorization: Bearer {{token}}
+
+### Get Files - Search by Term
+GET {{baseUrl}}/api/files?search_term=manual
+Authorization: Bearer {{token}}
+
+### Get Files - My Uploads Only
+GET {{baseUrl}}/api/files?myuploads=true
+Authorization: Bearer {{token}}
+
+### Get Files - Combined Filters
+GET {{baseUrl}}/api/files?semester=3&course=Data%20Structures&search_term=lab
+Authorization: Bearer {{token}}
+
+### Get Single File by ID
+GET {{baseUrl}}/api/files/{{fileId}}
+Authorization: Bearer {{token}}
+
+###############################################
+# ERROR TESTING
+###############################################
+
+### Test Invalid Token
+GET {{baseUrl}}/api/user/me
+Authorization: Bearer invalid_token_here
+
+### Test Registration with Invalid Email Domain
+POST {{baseUrl}}/api/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@wrongdomain.com",
+  "password": "password123",
+  "collegeId": "{{collegeId}}"
+}
+
+### Test Login with Wrong Password
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+  "email": "john@cec.ac.in",
+  "password": "wrongpassword"
+}
+
+### Test File Upload without Authentication
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data
+
+### Test Invalid Semester
+POST {{baseUrl}}/api/files/upload
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "semester": "99",
+  "course": "Test Course",
+  "description": "Test"
+}
+
