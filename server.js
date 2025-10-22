@@ -10,7 +10,17 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000', // Local development
+    'http://localhost:3001', // Alternative local port
+    'https://docdomcom.vercel.app', // Production frontend
+    'https://www.docdomcom.vercel.app' // Production frontend with www
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
