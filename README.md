@@ -348,7 +348,7 @@ curl -X POST http://localhost:5000/api/files/upload \
 ```env
 NODE_ENV=production
 PORT=5000
-MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/dbname
+MONGO_URI=
 JWT_SECRET=use_a_very_strong_random_secret_here
 JWT_EXPIRE=7d
 MAX_FILE_SIZE=10485760
