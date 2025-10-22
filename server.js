@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 // Initialize Express app
@@ -25,7 +26,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static folder for uploaded files (temporary, will be replaced with S3/GCS)
-app.use('/uploads', express.static('uploads'));
+const staticUploadPath = process.env.UPLOAD_PATH
+  ? path.isAbsolute(process.env.UPLOAD_PATH)
+    ? process.env.UPLOAD_PATH
+    : path.join(__dirname, process.env.UPLOAD_PATH)
+  : path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(staticUploadPath));
 
 // API Routes
 app.use('/api', require('./routes/auth'));
