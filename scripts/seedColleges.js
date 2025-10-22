@@ -8,7 +8,7 @@ const colleges = [
   
   {
     name: 'Qis College Of Engineering And Technology',
-    domain: 'qis.edu.in'
+    domain: 'qiscet.edu.in'
   },
   {
     name: 'Gayatri Vidya Parishad College for Degree & P.G. Courses',
