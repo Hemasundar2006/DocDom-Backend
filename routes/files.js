@@ -223,5 +223,85 @@ router.get('/:id', protect, [
   }
 });
 
+/**
+ * @route   GET /api/files/:id/download
+ * @desc    Download file with proper headers and access control
+ * @access  Private
+ */
+router.get('/:id/download', protect, [
+  param('id')
+    .isMongoId()
+    .withMessage('Invalid file ID')
+], async (req, res) => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+
+  try {
+    const file = await File.findById(req.params.id)
+      .populate('college', 'name domain');
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: 'File not found'
+      });
+    }
+
+    // CRITICAL: Verify user has access to this file (same college)
+    if (file.college._id.toString() !== req.user.college._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied: You can only download files from your college'
+      });
+    }
+
+    // Get the file path
+    const path = require('path');
+    const fs = require('fs');
+    const filePath = path.join(__dirname, '..', 'uploads', path.basename(file.fileUrl));
+
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'File not found on server'
+      });
+    }
+
+    // Set headers to force download instead of opening in browser
+    res.setHeader('Content-Disposition', `attachment; filename="${file.fileName}"`);
+    res.setHeader('Content-Type', file.fileType);
+    res.setHeader('Content-Length', file.fileSize);
+
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    // Handle stream errors
+    fileStream.on('error', (error) => {
+      console.error('File stream error:', error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          success: false,
+          message: 'Error reading file'
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error('Download file error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while downloading file'
+    });
+  }
+});
+
 module.exports = router;
 
